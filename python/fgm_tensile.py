@@ -1,7 +1,7 @@
 """Simulated tensile test of a round bar whose Hollomon parameters vary with radius.
 
 Implements the force integral of Amirian, Abbasi and Ebrahimi (2023), Eq. (6), with each
-ring keeping the K and n of its radius before the test, as in the 2022 scripts:
+ring keeping the K and n of the radius it had before the test:
 
     F(t) = integral from r_min to R(t) of  K(rho) * eps(t)**n(rho) * 2*pi*r dr
 
@@ -10,7 +10,7 @@ ring keeping the K and n of its radius before the test, as in the 2022 scripts:
     rho    = r * R0 / R(t)             radius of the same material point before the test
 
 Each ring of material keeps its own K and n while the bar thins. The integral is
-evaluated with composite Simpson's rule, as in the original 2022 MATLAB scripts.
+evaluated with composite Simpson's rule.
 The instability point (onset of necking) is the maximum of the force.
 """
 
@@ -20,7 +20,7 @@ import numpy as np
 
 
 def simpson(f, a, b, m):
-    """Composite Simpson's rule on [a, b] with 2*m sub-intervals (as in simpsons.m)."""
+    """Composite Simpson's rule on [a, b] with 2*m sub-intervals."""
     h = (b - a) / (2 * m)
     k = np.arange(1, m + 1)
     s1 = np.sum(f(a + h * (2 * k - 1)))
@@ -62,7 +62,7 @@ def tensile_test(K, n, *, R0=5.0, v=0.2, L0=100.0, rate=None, dt=0.5, t_end=400.
     dt, t_end       time step and end time, s; the steps are t = dt, 2*dt, ..., t_end
     r_min           lower limit of the force integral, mm (0 in Eq. 6)
     panels_per_step Simpson uses 2*m sub-intervals with m = panels_per_step * step number,
-                    the rule used in the 2022 scripts
+                    the rule used for the paper
     """
     if rate is None:
         rate = v / L0

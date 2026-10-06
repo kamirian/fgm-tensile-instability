@@ -2,15 +2,15 @@ function out = fgm_tensile(K, n, opts)
 %FGM_TENSILE Simulated tensile test of a round bar whose Hollomon K and n vary with radius.
 %
 %   out = fgm_tensile(K, n, opts) evaluates the force integral of Amirian, Abbasi and
-%   Ebrahimi (2023), Eq. (6), with each ring keeping the K and n of its radius before
-%   the test, as in the 2022 scripts:
+%   Ebrahimi (2023), Eq. (6), with each ring keeping the K and n of the radius it had
+%   before the test:
 %
 %       F(t) = integral from r_min to R(t) of K(rho) * eps(t)^n(rho) * 2*pi*r dr
 %       eps(t) = ln(1 + rate*t),  R(t) = R0 / sqrt(1 + rate*t),  rho = r*R0/R(t)
 %
 %   rho is the radius a material point had before the test, so each ring keeps its own
-%   K and n while the bar thins. The integral uses composite Simpson's rule, as in the
-%   original 2022 scripts. The instability (necking) point is the maximum force.
+%   K and n while the bar thins. The integral uses composite Simpson's rule. The
+%   instability (necking) point is the maximum force.
 %
 %   K, n    function handles of the undeformed radius rho in mm (K in MPa); must accept vectors
 %   opts    struct with any of these fields (defaults in brackets):

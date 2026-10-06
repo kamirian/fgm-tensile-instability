@@ -1,6 +1,6 @@
-%TEST_AGAINST_ORIGINAL Check matlab/fgm_tensile.m against the original 2022 scripts.
-%   tests/reference/*.csv hold the full output of the original scripts in
-%   original_2022/, run unchanged in GNU Octave.
+%TEST_REGRESSION Regression test: matlab/fgm_tensile.m against reference outputs.
+%   tests/reference/*.csv hold the full output of the original 2022 MATLAB
+%   implementation (one file per case).
 
 root = fileparts(fileparts(mfilename('fullpath')));
 addpath(fullfile(root, 'matlab'));
@@ -18,7 +18,7 @@ for c = 1:numel(cases)
     end
     good = worst < 1e-10;
     ok = ok && good;
-    fprintf('%-12s matches original script: %s (largest relative difference %.1e)\n', ...
+    fprintf('%-12s matches reference output: %s (largest relative difference %.1e)\n', ...
             cases(c).name, mat2str(good), worst);
 end
 if ok

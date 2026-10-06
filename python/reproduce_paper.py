@@ -19,10 +19,12 @@ from fgm_tensile import CASES, run_case
 ROOT = Path(__file__).resolve().parents[1]
 FIG = ROOT / "figures"
 NUMERICAL, EXPERIMENT = "#2a78d6", "#eb6834"
+SAMPLE_COLORS = {"A_550C": "#4a3aa7", "B_650C": "#1baf7a"}
 
-# Values the paper reports for the simulation (Table 1; Tables 3 and 4, "Numerical" rows).
+# Reference values: Considere's criterion for the homogeneous bar (true strain = n), and the
+# "Numerical" rows of Tables 3 and 4 of the paper for samples A and B.
 PAPER = {
-    "homogeneous": {"true_strain": 0.29},
+    "homogeneous": {"true_strain": 0.3},
     "A_550C": {"eng_strain": 0.11, "uts": 687, "true_strain": 0.11, "true_stress": 764},
     "B_650C": {"eng_strain": 0.18, "uts": 656, "true_strain": 0.16, "true_stress": 772},
 }
@@ -51,8 +53,8 @@ def main():
     print(f"{'case':12s}  {'':9s}" + "".join(f"{h:>19s}" for _, h, _ in COLUMNS))
     for name, res in results.items():
         got = res.instability()
-        print(f"{name:12s}  {'this code':9s}" + "".join(f"{f.format(got[k]):>19s}" for k, _, f in COLUMNS))
-        print(f"{'':12s}  {'paper':9s}" + "".join(
+        print(f"{name:12s}  {'model':9s}" + "".join(f"{f.format(got[k]):>19s}" for k, _, f in COLUMNS))
+        print(f"{'':12s}  {'reference':9s}" + "".join(
             f"{(str(PAPER[name][k]) if k in PAPER[name] else '-'):>19s}" for k, _, _ in COLUMNS))
 
     # Figs. 1 to 3: homogeneous bar, n = 0.3 and K = 100 MPa
@@ -96,6 +98,31 @@ def main():
         ax.set_ylim(0, 800)
         ax.legend(loc="lower right", frameon=False, fontsize=9)
     fig.savefig(FIG / "samples_vs_experiment.png", dpi=200)
+    plt.close(fig)
+
+    # Radial property profiles: n from the grain size (Qiu et al., 2012), and K(r)
+    grains = np.genfromtxt(ROOT / "data" / "wang2019_grain_size.csv", delimiter=",", names=True,
+                           dtype=None, encoding="utf-8")
+    r = np.linspace(0, 5, 101)
+    fig, axes = plt.subplots(1, 2, figsize=(11, 3.9), constrained_layout=True)
+    for name in ("A_550C", "B_650C"):
+        c = CASES[name]
+        color = SAMPLE_COLORS[name]
+        short = c["label"].split(",")[0] + " (" + c["label"].split("at ")[1].split(" (")[0] + ")"
+        g = grains[grains["sample"] == name]
+        n_points = 0.307 - 0.439 / np.sqrt(g["ferrite_grain_size_um"])
+        axes[0].plot(5.0 * g["r_over_R"], n_points, "o", ms=4, color=color, alpha=0.45, mec="none")
+        axes[0].plot(r, c["n"](r), color=color, lw=2, label=short)
+        axes[1].plot(r, c["K"](r), color=color, lw=2, label=short)
+    style(axes[0], "Radius r (mm)", "Strain-hardening exponent n")
+    axes[0].set_title("n(r): grain size (points) and linear fit (lines)", fontsize=10)
+    style(axes[1], "Radius r (mm)", "Strength coefficient K (MPa)")
+    axes[1].set_title("K(r) used in the model", fontsize=10)
+    for ax in axes:
+        ax.set_xlim(0, 5)
+    axes[0].legend(frameon=False, fontsize=9, loc="lower left")
+    axes[1].legend(frameon=False, fontsize=9, loc="center right")
+    fig.savefig(FIG / "property_profiles.png", dpi=200)
     plt.close(fig)
     print(f"\nFigures written to {FIG}")
 

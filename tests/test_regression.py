@@ -1,9 +1,9 @@
-"""Check the Python code against the original 2022 MATLAB scripts and the paper.
+"""Regression test: the Python model against reference outputs and the paper.
 
-    python tests/test_against_original.py
+    python tests/test_regression.py
 
-tests/reference/*.csv hold the full output of the original scripts in original_2022/
-(numericFGM2.m, l550.m, l650.m), run unchanged in GNU Octave.
+tests/reference/*.csv hold the full output of the original 2022 MATLAB implementation
+(one file per case).
 """
 
 import sys
@@ -36,7 +36,7 @@ def main():
                     for c in COLUMNS)
         good = worst < 1e-10
         ok &= good
-        print(f"{case:12s} matches original script: {'yes' if good else 'NO'} "
+        print(f"{case:12s} matches reference output: {'yes' if good else 'NO'} "
               f"(largest relative difference {worst:.1e})")
         for key, (value, tol) in PAPER.get(case, {}).items():
             got = res.instability()[key]

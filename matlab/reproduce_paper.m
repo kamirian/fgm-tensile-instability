@@ -7,7 +7,7 @@ addpath(fullfile(root, 'matlab'));
 
 cases = paper_cases();
 paper = struct( ...
-    'homogeneous', [NaN NaN 0.29 NaN], ...
+    'homogeneous', [NaN NaN 0.3 NaN], ...
     'A_550C',      [0.11 687 0.11 764], ...
     'B_650C',      [0.18 656 0.16 772]);
 
@@ -19,9 +19,9 @@ for c = 1:numel(cases)
     results.(cases(c).name) = out;
     s = out.instability;
     p = paper.(cases(c).name);
-    fprintf('%-12s %-10s %12.3f %12.1f %12.3f %18.1f\n', cases(c).name, 'this code', ...
+    fprintf('%-12s %-10s %12.3f %12.1f %12.3f %18.1f\n', cases(c).name, 'model', ...
             s.eng_strain, s.uts, s.true_strain, s.true_stress);
-    fprintf('%-12s %-10s %12g %12g %12g %18g\n', '', 'paper', p(1), p(2), p(3), p(4));
+    fprintf('%-12s %-10s %12g %12g %12g %18g\n', '', 'reference', p(1), p(2), p(3), p(4));
 end
 
 figdir = fullfile(root, 'figures');
