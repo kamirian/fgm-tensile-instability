@@ -73,7 +73,7 @@ def main():
         ax.set_xlim(left=0)
         ax.set_ylim(bottom=0)
     mark_peak(axes[0], h.displacement[i], h.force[i], f"max force, true strain {p['true_strain']:.3f}")
-    fig.suptitle("Homogeneous check: n = 0.3, K = 100 MPa (instability expected at true strain n = 0.3)",
+    fig.suptitle("Homogeneous check, n = 0.3, K = 100 MPa (instability expected at true strain n = 0.3)",
                  fontsize=11)
     fig.savefig(FIG / "homogeneous_check.png", dpi=200)
     plt.close(fig)
@@ -89,9 +89,9 @@ def main():
         e = exp[exp["sample"] == name]
         ax.plot(e["eng_strain"], e["eng_stress_MPa"], color=EXPERIMENT, lw=2, ls=(0, (5, 3)),
                 label="Experiment (Wang et al., 2019)")
-        ax.plot(res.eng_strain, res.eng_stress, color=NUMERICAL, lw=2, label="This model")
+        ax.plot(res.eng_strain, res.eng_stress, color=NUMERICAL, lw=2, label="Numerical prediction")
         q = res.instability()
-        mark_peak(ax, q["eng_strain"], q["uts"], f"instability: {q['eng_strain']:.3f}, {q['uts']:.0f} MPa")
+        mark_peak(ax, q["eng_strain"], q["uts"], f"instability at {q['eng_strain']:.3f} ({q['uts']:.0f} MPa)")
         style(ax, "Engineering strain", "Engineering stress (MPa)" if name == "A_550C" else "")
         ax.set_title(f"{CASES[name]['label'].split(' (')[0]}\n{eqs}", fontsize=10)
         ax.set_xlim(0, 0.3)
@@ -100,22 +100,17 @@ def main():
     fig.savefig(FIG / "samples_vs_experiment.png", dpi=200)
     plt.close(fig)
 
-    # Radial property profiles: n from the grain size (Qiu et al., 2012), and K(r)
-    grains = np.genfromtxt(ROOT / "data" / "wang2019_grain_size.csv", delimiter=",", names=True,
-                           dtype=None, encoding="utf-8")
+    # Radial property profiles n(r) and K(r) used in the model
     r = np.linspace(0, 5, 101)
     fig, axes = plt.subplots(1, 2, figsize=(11, 3.9), constrained_layout=True)
     for name in ("A_550C", "B_650C"):
         c = CASES[name]
         color = SAMPLE_COLORS[name]
         short = c["label"].split(",")[0] + " (" + c["label"].split("at ")[1].split(" (")[0] + ")"
-        g = grains[grains["sample"] == name]
-        n_points = 0.307 - 0.439 / np.sqrt(g["ferrite_grain_size_um"])
-        axes[0].plot(5.0 * g["r_over_R"], n_points, "o", ms=4, color=color, alpha=0.45, mec="none")
         axes[0].plot(r, c["n"](r), color=color, lw=2, label=short)
         axes[1].plot(r, c["K"](r), color=color, lw=2, label=short)
     style(axes[0], "Radius r (mm)", "Strain-hardening exponent n")
-    axes[0].set_title("n(r): grain size (points) and linear fit (lines)", fontsize=10)
+    axes[0].set_title("n(r) used in the model", fontsize=10)
     style(axes[1], "Radius r (mm)", "Strength coefficient K (MPa)")
     axes[1].set_title("K(r) used in the model", fontsize=10)
     for ax in axes:

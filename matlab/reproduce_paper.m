@@ -62,7 +62,7 @@ for k = 1:2
     xlim([0 0.3]); ylim([0 800]); grid on;
     xlabel('Engineering strain'); ylabel('Engineering stress (MPa)');
     title(titles{k});
-    legend({'Experiment (Wang et al., 2019)', 'This model', 'Instability'}, 'Location', 'southeast');
+    legend({'Experiment (Wang et al., 2019)', 'Numerical prediction', 'Instability'}, 'Location', 'southeast');
 end
 print(f, fullfile(figdir, 'samples_vs_experiment_matlab.png'), '-dpng', '-r150');
 close(f);

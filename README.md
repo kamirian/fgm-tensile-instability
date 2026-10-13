@@ -14,9 +14,11 @@ The main finding is that the bar becomes unstable at a true strain close to the 
 
 ### 1. Radial property profiles
 
-The hardening exponent follows from the ferrite grain size *d* (in µm) through $n = 0.307 - 0.439\, d^{-1/2}$ (Eq. 7 of the paper, based on Qiu et al., 2012). Applied to the measured grain-size distribution, it gives *n* at each radius, and a linear fit gives *n*(*r*). The strength coefficient *K*(*r*) is obtained from the microhardness profile across the bar.
+The hardening exponent follows from the ferrite grain size *d* (in µm) through $n = 0.307 - 0.439 d^{-1/2}$ (Eq. 7 of the paper, based on Qiu et al., 2012). Applied to the measured grain-size distribution, it gives *n* at each radius, and a linear fit gives *n*(*r*). The strength coefficient *K*(*r*) is obtained from the microhardness profile across the bar.
 
 ![Radial profiles of n and K](figures/property_profiles.png)
+
+The figure shows the fitted profiles used in the simulation.
 
 | Sample | *n*(*r*) | *K*(*r*) (MPa) |
 |---|---|---|
@@ -29,11 +31,15 @@ The hardening exponent follows from the ferrite grain size *d* (in µm) through 
 
 The bar is pulled at a constant crosshead speed *v* over a gauge length *L*₀. With uniform deformation and constant volume, the true strain and the bar radius at time *t* are
 
-$$\varepsilon(t) = \ln\left(1 + \frac{v t}{L_0}\right), \qquad R(t) = \frac{R_0}{\sqrt{1 + v t / L_0}}$$
+```math
+\varepsilon(t) = \ln\left(1 + \frac{v t}{L_0}\right) \qquad R(t) = \frac{R_0}{\sqrt{1 + v t / L_0}}
+```
 
 Each ring of material keeps the *K* and *n* of the radius $\rho = r R_0 / R(t)$ it had before the test, and follows the Hollomon law $\sigma = K \varepsilon^{n}$. The axial force is the flow stress integrated over the current cross-section,
 
-$$F(t) = \int_{r_\mathrm{min}}^{R(t)} K(\rho)\, \varepsilon(t)^{\,n(\rho)}\, 2\pi r \, dr$$
+```math
+F(t) = \int_{r_\mathrm{min}}^{R(t)} K(\rho)\, \varepsilon(t)^{n(\rho)}\, 2\pi r \, \mathrm{d}r
+```
 
 which is evaluated with composite Simpson's rule. For samples A and B the integral starts at $r_\mathrm{min}$ = 0.5 mm, which reproduces the paper's Tables 3 and 4. The engineering stress is $F/\pi R_0^2$ and the true stress is $F/\pi R(t)^2$.
 
@@ -58,7 +64,9 @@ The time step is Δ*t* = 0.5 s. Samples A and B use *v* = 1.5 mm/min and *L*₀ 
 
 Necking starts when the force reaches its maximum: beyond it, work hardening can no longer make up for the shrinking cross-section. For a homogeneous bar this happens at a true strain equal to *n* (Considère's criterion). For the graded bars it is compared with the cross-section average
 
-$$\bar n = \frac{1}{\pi R_0^2} \int_0^{R_0} n(r)\, 2\pi r \, dr$$
+```math
+\bar n = \frac{1}{\pi R_0^2} \int_0^{R_0} n(r)\, 2\pi r \, \mathrm{d}r
+```
 
 ## Results
 
@@ -71,6 +79,8 @@ $$\bar n = \frac{1}{\pi R_0^2} \int_0^{R_0} n(r)\, 2\pi r \, dr$$
 | True stress at instability (MPa) | 764.2 | 771.8 |
 
 The true strain at instability is within 0.004 of *n̄* for both samples, and the values match Tables 3 and 4 of the paper. As a check, a homogeneous bar with *n* = 0.3 and *K* = 100 MPa becomes unstable at a true strain of 0.300, as Considère's criterion requires.
+
+The model reproduces the UTS within 1.2% (A) and 3.7% (B) but predicts necking later than the experiments, at engineering strain 0.112 vs about 0.06 (A) and 0.177 vs about 0.11 (B) on the digitized curves.
 
 ![Force-displacement and stress-strain curves for the homogeneous bar](figures/homogeneous_check.png)
 
